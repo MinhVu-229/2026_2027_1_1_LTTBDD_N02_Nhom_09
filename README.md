@@ -1,16 +1,14 @@
 # english_flashcard
 
-A new Flutter project.
+## Thông tin môn học
+- **Môn học:** Lập trình thiết bị di động
+- **Mã lớp:** 2026_2027_1_1_LTTBDD_N02
+- **Giảng viên hướng dẫn:** Nguyễn Xuân Quế
 
-## Getting Started
+## Danh sách thành viên (Nhóm 09)
+1. Vũ Minh Nguyệt - 23010129
+2. Nguyễn Xuân Thanh - 23010073
+3. Trần Thị Ngoãn - 23010154
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Mô tả ứng dụng
+Ứng dụng Flashcard học từ vựng Tiếng Anh hỗ trợ lật thẻ ôn tập, làm bài trắc nghiệm và chuyển đổi 2 ngôn ngữ Anh - Việt.
