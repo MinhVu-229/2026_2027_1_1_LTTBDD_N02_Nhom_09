@@ -12,6 +12,13 @@ class AppState extends ChangeNotifier {
   int bestScore = 0;
   int streak = 0;
   String lastDate = '';
+  // Thống kê bài kiểm tra
+  int quizCount = 0;
+  int totalCorrectAnswers = 0;
+  int totalAnsweredQuestions = 0;
+
+  // Lịch sử điểm
+  List<int> quizHistory = [];
 
   Future<void> load() async {
     _p = await SharedPreferences.getInstance();
@@ -21,6 +28,12 @@ class AppState extends ChangeNotifier {
     bestScore = _p.getInt('best') ?? 0;
     streak = _p.getInt('streak') ?? 0;
     lastDate = _p.getString('last') ?? '';
+    quizCount = _p.getInt('quizCount') ?? 0;
+    totalCorrectAnswers = _p.getInt('totalCorrectAnswers') ?? 0;
+    totalAnsweredQuestions = _p.getInt('totalAnsweredQuestions') ?? 0;
+    quizHistory = (_p.getStringList('quizHistory') ?? [])
+        .map((e) => int.tryParse(e) ?? 0)
+        .toList();
   }
 
   String _fmt(DateTime d) => '${d.year}-${d.month}-${d.day}';
@@ -58,6 +71,17 @@ class AppState extends ChangeNotifier {
       bestScore = score;
       _p.setInt('best', score);
     }
+    quizCount++;
+    totalCorrectAnswers += score;
+    totalAnsweredQuestions += 10;
+    quizHistory.add(score);
+    _p.setInt('quizCount', quizCount);
+    _p.setInt('totalCorrectAnswers', totalCorrectAnswers);
+    _p.setInt('totalAnsweredQuestions', totalAnsweredQuestions);
+    _p.setStringList(
+      'quizHistory',
+      quizHistory.map((e) => e.toString()).toList(),
+    );
     _touchStreak();
     notifyListeners();
   }
@@ -73,4 +97,11 @@ class AppState extends ChangeNotifier {
     _p.setInt('theme', m.index);
     notifyListeners();
   }
+
+  int get totalWrongAnswers => totalAnsweredQuestions - totalCorrectAnswers;
+  double get averageScore =>
+      quizCount == 0 ? 0 : totalCorrectAnswers / quizCount;
+  double get correctRate => totalAnsweredQuestions == 0
+      ? 0
+      : totalCorrectAnswers / totalAnsweredQuestions;
 }

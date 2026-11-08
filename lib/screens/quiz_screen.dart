@@ -39,11 +39,12 @@ class _QuizScreenState extends State<QuizScreen> {
       ..shuffle(rnd);
     final picks = [...pool, ...others].take(10).toList(); // đủ 10 câu
     _qs = picks.map((w) {
-      final wrong = allWords
-          .where((x) => x.meaning != w.meaning)
-          .map((x) => x.meaning)
-          .toList()
-        ..shuffle(rnd);
+      final wrong =
+          allWords
+              .where((x) => x.meaning != w.meaning)
+              .map((x) => x.meaning)
+              .toList()
+            ..shuffle(rnd);
       final opts = [w.meaning, ...wrong.take(3)]..shuffle(rnd);
       return _Q(w, opts);
     }).toList();
@@ -93,49 +94,81 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   Widget _result() => Center(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Icon(Icons.emoji_events, size: 90, color: Colors.amber),
-          const SizedBox(height: 12),
-          Text(S.t('score'), style: const TextStyle(fontSize: 20)),
-          Text('$_score / ${_qs.length}',
-              style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 24),
-          FilledButton(
-              onPressed: () => setState(_start), child: Text(S.t('retry'))),
-        ]),
-      );
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(Icons.emoji_events, size: 90, color: Colors.amber),
+        const SizedBox(height: 12),
+        Text(S.t('score'), style: const TextStyle(fontSize: 20)),
+        Text(
+          '$_score / ${_qs.length}',
+          style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 24),
+        Text(
+          '${S.t('question')}: ${_qs.length}',
+          style: const TextStyle(fontSize: 16),
+        ),
+        Text(
+          '${AppState.i.isVi ? 'Số câu đúng' : 'Correct'}: $_score',
+          style: const TextStyle(fontSize: 16, color: Colors.green),
+        ),
+        Text(
+          '${AppState.i.isVi ? 'Số câu sai' : 'Wrong'}: ${_qs.length - _score}',
+          style: const TextStyle(fontSize: 16, color: Colors.red),
+        ),
+        Text(
+          '${AppState.i.isVi ? 'Tỷ lệ chính xác' : 'Accuracy'}: '
+          '${(_score / _qs.length * 100).toStringAsFixed(0)}%',
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        FilledButton(
+          onPressed: () => setState(_start),
+          child: Text(S.t('retry')),
+        ),
+      ],
+    ),
+  );
 
   Widget _question() {
     final q = _qs[_cur];
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      LinearProgressIndicator(value: (_cur + 1) / _qs.length),
-      const SizedBox(height: 16),
-      Text('${S.t('question')} ${_cur + 1}/${_qs.length}'),
-      const SizedBox(height: 24),
-      Text(q.word.word,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        LinearProgressIndicator(value: (_cur + 1) / _qs.length),
+        const SizedBox(height: 16),
+        Text('${S.t('question')} ${_cur + 1}/${_qs.length}'),
+        const SizedBox(height: 24),
+        Text(
+          q.word.word,
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 38, fontWeight: FontWeight.bold)),
-      Text(q.word.phonetic,
-          textAlign: TextAlign.center, style: const TextStyle(fontSize: 20)),
-      const SizedBox(height: 24),
-      for (int i = 0; i < q.options.length; i++)
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: FilledButton.tonal(
-            style: FilledButton.styleFrom(
-              backgroundColor: _color(i),
-              padding: const EdgeInsets.all(16),
+          style: const TextStyle(fontSize: 38, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          q.word.phonetic,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 20),
+        ),
+        const SizedBox(height: 24),
+        for (int i = 0; i < q.options.length; i++)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: FilledButton.tonal(
+              style: FilledButton.styleFrom(
+                backgroundColor: _color(i),
+                padding: const EdgeInsets.all(16),
+              ),
+              onPressed: () => _pick(i),
+              child: Text(q.options[i], style: const TextStyle(fontSize: 18)),
             ),
-            onPressed: () => _pick(i),
-            child: Text(q.options[i], style: const TextStyle(fontSize: 18)),
           ),
-        ),
-      const Spacer(),
-      if (_picked != null)
-        FilledButton(
-          onPressed: _next,
-          child: Text(_cur == _qs.length - 1 ? S.t('finish') : S.t('next')),
-        ),
-    ]);
+        const Spacer(),
+        if (_picked != null)
+          FilledButton(
+            onPressed: _next,
+            child: Text(_cur == _qs.length - 1 ? S.t('finish') : S.t('next')),
+          ),
+      ],
+    );
   }
 }
