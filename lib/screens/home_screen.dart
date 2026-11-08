@@ -51,28 +51,84 @@ class HomeScreen extends StatelessWidget {
             final d = decks[i];
             final done =
                 d.words.where((w) => AppState.i.learned.contains(w.word)).length;
-            return Card(
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                leading: CircleAvatar(radius: 26, child: Icon(d.icon)),
-                title: Text(d.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('$done/${d.words.length} ${S.t('words')}'),
-                      const SizedBox(height: 6),
-                      LinearProgressIndicator(value: done / d.words.length),
-                    ],
-                  ),
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => _choose(context, d),
-              ),
+            return _DeckCard(
+              deck: d,
+              done: done,
+              onTap: () => _choose(context, d),
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class _DeckCard extends StatefulWidget {
+  final Deck deck;
+  final int done;
+  final VoidCallback onTap;
+  const _DeckCard(
+      {required this.deck, required this.done, required this.onTap});
+
+  @override
+  State<_DeckCard> createState() => _DeckCardState();
+}
+
+class _DeckCardState extends State<_DeckCard> {
+  bool _hover = false;
+  bool _press = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final active = _hover || _press;
+    final d = widget.deck;
+
+    final Color? bg = active
+        ? (dark ? const Color(0xFF2A2340) : const Color(0xFFF7F4FE))
+        : (dark ? null : Colors.white);
+    final Color border = active
+        ? (dark ? const Color(0xFF6B4FBF) : const Color(0xFFDDD0FB))
+        : (dark ? Colors.white24 : const Color(0xFFE5E7EB));
+    final Color? titleColor = active
+        ? (dark ? const Color(0xFFB79CFF) : const Color(0xFF5B21D6))
+        : null;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: Listener(
+        onPointerDown: (_) => setState(() => _press = true),
+        onPointerUp: (_) => setState(() => _press = false),
+        onPointerCancel: (_) => setState(() => _press = false),
+        child: Card(
+          color: bg,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: border),
+          ),
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(16),
+            leading: CircleAvatar(radius: 26, child: Icon(d.icon)),
+            title: Text(d.name,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: titleColor)),
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('${widget.done}/${d.words.length} ${S.t('words')}'),
+                  const SizedBox(height: 6),
+                  LinearProgressIndicator(value: widget.done / d.words.length),
+                ],
+              ),
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: widget.onTap,
+          ),
         ),
       ),
     );
